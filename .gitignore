@@ -41,3 +41,7 @@ logs/
 # Temporary Files
 tmp/
 temp/
+
+# Dataset files
+data/raw/*.csv
+data/processed/*.csv
