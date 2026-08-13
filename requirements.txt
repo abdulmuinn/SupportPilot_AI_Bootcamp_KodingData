@@ -4,3 +4,4 @@ matplotlib
 jupyter
 ipykernel
 scikit-learn
+joblib

@@ -1,0 +1,13 @@
+{
+    "model": "TF-IDF + Logistic Regression",
+    "validation_records": 4483,
+    "accuracy": 0.9823778719607406,
+    "macro_precision": 0.983123216194775,
+    "macro_recall": 0.9825595734642394,
+    "macro_f1": 0.9825621740190106,
+    "weighted_f1": 0.9823685848219169,
+    "training_time_seconds": 3.785486300010234,
+    "inference_time_seconds": 0.06398669999907725,
+    "average_inference_ms": 0.014273187597385065,
+    "vocabulary_size": 9038
+}
