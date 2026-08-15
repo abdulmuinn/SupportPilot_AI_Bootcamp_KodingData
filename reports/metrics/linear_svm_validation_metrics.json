@@ -1,0 +1,13 @@
+{
+    "model": "TF-IDF + Linear SVM",
+    "validation_records": 4483,
+    "accuracy": 0.9872853000223065,
+    "macro_precision": 0.9877057459961837,
+    "macro_recall": 0.9874850910679254,
+    "macro_f1": 0.9874287460928,
+    "weighted_f1": 0.9872644630629368,
+    "training_time_seconds": 12.267938000004506,
+    "inference_time_seconds": 0.23521169999730773,
+    "average_inference_ms": 0.052467477135245986,
+    "vocabulary_size": 9038
+}
