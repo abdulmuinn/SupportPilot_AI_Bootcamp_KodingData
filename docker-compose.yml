@@ -1,6 +1,11 @@
 name: supportpilot
 
 services:
+
+  # ==========================================================
+  # FASTAPI / DISTILBERT
+  # ==========================================================
+
   api:
     build:
       context: .
@@ -24,3 +29,35 @@ services:
       - ALL
 
     stop_grace_period: 20s
+
+
+  # ==========================================================
+  # STREAMLIT UI
+  # ==========================================================
+
+  ui:
+    build:
+      context: .
+      dockerfile: dockerfile.ui
+
+    image: supportpilot-ui:latest
+
+    environment:
+      SUPPORTPILOT_API_URL: http://api:8000
+
+    ports:
+      - "8501:8501"
+
+    depends_on:
+      api:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    init: true
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
