@@ -652,11 +652,12 @@ SupportPilot_AI_Bootcamp_KodingData/
 ├── data/
 │
 ├── docs/
+│   ├── DATASET.md
+│   ├── MLOPS.md
 │   └── images/
 │       ├── intent_analyzer.png
 │       ├── top_k_analysis.png
 │       └── batch_analysis.png
-│
 ├── models/
 │   └── distilbert_supportpilot/
 │       └── best_model/
@@ -728,8 +729,8 @@ Uvicorn
 
 ```text
 Streamlit
-Plotly
-Requests
+Pandas
+Python urllib
 ```
 
 ## Testing
