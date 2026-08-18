@@ -45,6 +45,53 @@ mengurangi risiko penggunaan prediksi ketika model memiliki confidence
 yang rendah.
 
 ---
+# Dataset
+
+SupportPilot AI menggunakan **Bitext Retail (eCommerce) Tagged Training
+Dataset for LLM-based Virtual Assistants**.
+
+Dataset original:
+
+```text
+Provider    : Bitext
+Domain      : Retail / eCommerce
+Language    : English
+Records     : 44,884
+Intents     : 46
+Categories  : 13
+```
+
+Setelah duplicate cleaning:
+
+```text
+Clean Records : 44,827
+```
+
+Dataset kemudian dibagi secara stratified menjadi:
+
+```text
+Train      : 35,861
+Validation : 4,483
+Final Test : 4,483
+```
+
+Dataset original dapat direproduksi menggunakan:
+
+```bash
+python src/data/download_dataset.py
+```
+
+License:
+
+```text
+CDLA-Sharing-1.0
+```
+
+Dokumentasi dataset lengkap:
+
+[`docs/DATASET.md`](docs/DATASET.md)
+
+---
 
 # Machine Learning Pipeline
 
