@@ -22,7 +22,7 @@ import streamlit as st
 
 API_BASE_URL = os.getenv(
     "SUPPORTPILOT_API_URL",
-    "http://127.0.0.1:8001",
+    "http://127.0.0.1:8000",
 )
 
 # ============================================================
