@@ -1,0 +1,50 @@
+# ============================================================
+# SupportPilot AI — Docker Ignore
+# ============================================================
+
+# Git
+.git/
+.gitignore
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Development / experiment assets
+notebooks/
+reports/
+tests/
+data/
+
+# Training checkpoints - tidak dibutuhkan production
+models/distilbert_supportpilot/checkpoint-*/
+
+# Local temporary files
+*.log
+*.tmp
+*.temp
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,128 +1,105 @@
 # ============================================================
-# Python / Test Cache
+# SupportPilot AI — CPU Production Image
 # ============================================================
 
-.pytest_cache/
-**/__pycache__/
-*.pyc
-*.pyo
+FROM python:3.11-slim
 
 
 # ============================================================
-# Environment Files
+# PYTHON / PIP CONFIGURATION
 # ============================================================
 
-.env
-.env.*
-!.env.example
-
-
-# ============================================================
-# DistilBERT Training Checkpoints
-# ============================================================
-
-models/distilbert_supportpilot/checkpoint-*/
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
 
 
 # ============================================================
-# Temporary Training Artifacts
+# WORK DIRECTORY
 # ============================================================
 
-*.log
-*.tmp
-*.temp
-
-# ============================================================
-# Python / Testing Cache
-# ============================================================
-
-.pytest_cache/
-**/__pycache__/
-*.pyc
-*.pyo
+WORKDIR /app
 
 
 # ============================================================
-# Environment Files
+# INSTALL PYTORCH CPU
 # ============================================================
 
-.env
-.env.*
-!.env.example
-
-
-# ============================================================
-# DistilBERT Training Checkpoints
-# ============================================================
-
-models/distilbert_supportpilot/checkpoint-*/
+RUN python -m pip install --upgrade pip \
+    && python -m pip install \
+        torch==2.12.0 \
+        --index-url https://download.pytorch.org/whl/cpu
 
 
 # ============================================================
-# Temporary Files
+# INSTALL API DEPENDENCIES
 # ============================================================
 
-*.tmp
-*.temp
+COPY requirements-api.txt ./requirements-api.txt
 
-# ============================================================
-# Local IDE
-# ============================================================
-
-/.vscode/
+RUN python -m pip install \
+    --no-cache-dir \
+    -r requirements-api.txt
 
 
 # ============================================================
-# Dataset
+# CREATE NON-ROOT USER
 # ============================================================
 
-/data/raw/
-/data/processed/
-
-
-# ============================================================
-# Python / Testing Cache
-# ============================================================
-
-.pytest_cache/
-**/__pycache__/
-*.pyc
-*.pyo
+RUN groupadd --system appgroup \
+    && useradd \
+        --system \
+        --gid appgroup \
+        --create-home \
+        appuser
 
 
 # ============================================================
-# Environment Files
+# COPY APPLICATION SOURCE
 # ============================================================
 
-.env
-.env.*
-!.env.example
-
-
-# ============================================================
-# DistilBERT Training Checkpoints
-# ============================================================
-
-models/distilbert_supportpilot/checkpoint-*/
+COPY --chown=appuser:appgroup \
+    src \
+    ./src
 
 
 # ============================================================
-# Temporary Files
+# COPY PRODUCTION MODEL
 # ============================================================
 
-*.tmp
-*.temp
-
-# ============================================================
-# Baseline Model Artifacts
-# ============================================================
-
-/models/tfidf_linear_svm.joblib
-/models/tfidf_logistic_regression.joblib
+COPY --chown=appuser:appgroup \
+    models/distilbert_supportpilot/best_model \
+    ./models/distilbert_supportpilot/best_model
 
 
 # ============================================================
-# DistilBERT Non-Production Artifact
+# SWITCH TO NON-ROOT USER
 # ============================================================
 
-/models/distilbert_supportpilot/best_model/training_args.bin
+USER appuser
+
+
+# ============================================================
+# PORT
+# ============================================================
+
+EXPOSE 8000
+
+
+# ============================================================
+# HEALTH CHECK
+# ============================================================
+
+HEALTHCHECK \
+    --interval=30s \
+    --timeout=5s \
+    --start-period=30s \
+    --retries=3 \
+    CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+
+
+# ============================================================
+# START FASTAPI
+# ============================================================
+
+CMD ["python", "-m", "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]

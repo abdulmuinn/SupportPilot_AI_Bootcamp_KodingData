@@ -1,0 +1,7 @@
+actual_intent,predicted_intent,count
+return_policy,return_product_online,3
+damaged_delivery,wrong_item,3
+track_order,track_delivery,3
+return_product,cancel_order,1
+missing_item,wrong_item,1
+request_invoice,store_location,1

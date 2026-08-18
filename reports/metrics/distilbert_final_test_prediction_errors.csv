@@ -1,0 +1,13 @@
+row,instruction,actual_intent,predicted_intent,predicted_confidence,actual_confidence,second_best_intent,second_best_confidence,confidence_margin
+38,is it possinle to return an item online?,return_policy,return_product_online,0.9971699,0.001377073,return_policy,0.001377073,0.99579287
+4321,how can I return somw products online?,return_policy,return_product_online,0.99706763,0.0014786754,return_policy,0.0014786754,0.99558896
+2001,can i return a fucking item online,return_policy,return_product_online,0.99541783,0.002953084,return_policy,0.002953084,0.9924647
+3166,"I got to see where ym shipment is, where can I do it?",track_order,track_delivery,0.9768486,0.020754626,track_order,0.020754626,0.95609397
+3967,how do I check wehere my shipment is?,track_order,track_delivery,0.97229815,0.025509154,track_order,0.025509154,0.94678897
+1500,can oyu help me report products?,damaged_delivery,wrong_item,0.9579501,0.038472813,damaged_delivery,0.038472813,0.9194773
+171,"I'd likw to report products, will you help me?",damaged_delivery,wrong_item,0.93224186,0.06343985,damaged_delivery,0.06343985,0.868802
+3822,"I have to  report products, will you help me?",damaged_delivery,wrong_item,0.91192275,0.083181426,damaged_delivery,0.083181426,0.8287413
+3512,"I want to check where my shipment is, I need assistance",track_order,track_delivery,0.906879,0.09014462,track_order,0.09014462,0.8167344
+787,"I got to erturn a fucking product, I need assistance",return_product,cancel_order,0.7681371,0.092913,return_product,0.092913,0.67522407
+3067,wanna report a fucking miossing item i need help,missing_item,wrong_item,0.6091904,0.051391594,damaged_delivery,0.32735234,0.28183806
+3970,"I got to find a bil, where to do it?",request_invoice,store_location,0.40901405,0.3464484,request_invoice,0.3464484,0.062565655

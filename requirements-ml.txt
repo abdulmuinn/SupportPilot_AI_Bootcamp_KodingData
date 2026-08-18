@@ -1,0 +1,21 @@
+# ============================================================
+# SupportPilot AI — ML / Training
+# Python 3.11
+# ============================================================
+
+-r requirements-api.txt
+
+numpy==2.4.6
+pandas==3.0.5
+scikit-learn==1.9.0
+joblib==1.5.3
+
+accelerate==1.14.0
+
+pytest==9.1.1
+httpx2==2.10.0
+
+# PyTorch local GPU environment:
+# torch==2.12.0+cu126
+#
+# Instalasi PyTorch dilakukan terpisah sesuai target compute.

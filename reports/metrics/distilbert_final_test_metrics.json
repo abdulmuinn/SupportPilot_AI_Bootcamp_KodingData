@@ -1,0 +1,15 @@
+{
+    "model": "DistilBERT",
+    "selection_metric": "macro_f1",
+    "selection_data": "validation",
+    "test_records": 4483,
+    "accuracy": 0.997323,
+    "macro_precision": 0.997436,
+    "macro_recall": 0.997287,
+    "macro_f1": 0.997325,
+    "weighted_f1": 0.997326,
+    "correct_predictions": 4471,
+    "prediction_errors": 12,
+    "inference_time_seconds": 5.4182,
+    "average_inference_ms_per_sample": 1.2086
+}

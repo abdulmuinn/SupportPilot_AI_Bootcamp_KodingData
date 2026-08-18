@@ -1,223 +1,32 @@
 # SupportPilot AI
 
-> Sistem AI Customer Support berbasis Machine Learning, Retrieval-Augmented Generation (RAG), Large Language Model (LLM), FastAPI, dan MLOps/LLMOps.
+SupportPilot AI adalah sistem **Customer Support Intent Classification**
+berbasis Machine Learning dan Natural Language Processing (NLP).
 
-![Project Status](https://img.shields.io/badge/status-in%20development-yellow)
-![Python](https://img.shields.io/badge/Python-3.11-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-Backend-green)
-![Streamlit](https://img.shields.io/badge/Streamlit-Frontend-red)
-![MLflow](https://img.shields.io/badge/MLflow-MLOps-blue)
+Sistem menerima pesan customer, mengidentifikasi intent dari pesan tersebut,
+kemudian menghasilkan prediksi intent beserta confidence score.
 
----
-
-## 1. Gambaran Umum
-
-**SupportPilot AI** adalah sistem customer support berbasis Artificial Intelligence yang dirancang untuk membantu menangani pertanyaan pelanggan secara otomatis.
-
-Sistem dapat:
-
-- memahami pertanyaan pelanggan,
-- mengklasifikasikan intent pelanggan,
-- mencari informasi yang relevan dari knowledge base perusahaan,
-- menghasilkan jawaban menggunakan Large Language Model,
-- memberikan sumber informasi yang digunakan,
-- mendeteksi kondisi ketika AI tidak cukup yakin,
-- dan merekomendasikan Human Escalation.
-
-Project ini dikembangkan sebagai Final Project **Track B — AI Engineering KodingData Bootcamp** sekaligus sebagai project portfolio AI Engineering.
+Model utama menggunakan **DistilBERT** dan disediakan melalui REST API
+menggunakan **FastAPI**.
 
 ---
 
-## 2. Latar Belakang
+## Project Overview
 
-Tim customer support pada sebuah perusahaan sering menerima banyak pertanyaan berulang dari pelanggan.
+Customer support menerima berbagai jenis pesan seperti:
 
-Contoh pertanyaan tersebut antara lain:
+- pelacakan pesanan
+- pembatalan pesanan
+- pembayaran
+- refund
+- retur produk
+- delivery
+- account management
+- product information
+- dan kebutuhan customer lainnya
 
-- Status pesanan
-- Status pengiriman
-- Refund
-- Pembayaran
-- Pembatalan pesanan
-- Permasalahan akun
-- Invoice
-- Informasi layanan
-- Permintaan berbicara dengan customer service
-
-Jika seluruh pertanyaan tersebut ditangani secara manual, beberapa masalah dapat muncul:
-
-- Waktu respons customer support menjadi lebih lama
-- Beban kerja customer support meningkat
-- Jawaban antar customer support dapat tidak konsisten
-- Customer support membutuhkan waktu untuk mencari kebijakan perusahaan
-- Pelanggan harus menunggu untuk memperoleh jawaban
-- Sistem AI biasa dapat menghasilkan jawaban yang tidak sesuai informasi perusahaan
-
-Karena itu dibutuhkan sistem AI yang tidak hanya mampu menghasilkan jawaban, tetapi juga mampu memahami maksud pelanggan dan menggunakan informasi perusahaan sebagai dasar jawaban.
-
----
-
-## 3. Problem Statement
-
-Project ini mencoba menjawab pertanyaan berikut:
-
-> Bagaimana membangun sistem AI Customer Support yang mampu memahami intent pelanggan, mengambil informasi yang relevan dari knowledge base perusahaan, menghasilkan jawaban yang grounded menggunakan Large Language Model, serta mengalihkan pertanyaan kepada manusia ketika AI tidak memiliki confidence yang cukup?
-
----
-
-## 4. Tujuan Project
-
-Tujuan utama project SupportPilot AI adalah membangun sistem AI end-to-end yang mampu:
-
-1. Mengklasifikasikan intent dari pertanyaan pelanggan
-2. Membandingkan beberapa pendekatan Machine Learning dan Transformer
-3. Memilih model Intent Classification terbaik
-4. Mencari informasi yang relevan dari knowledge base
-5. Mengimplementasikan Retrieval-Augmented Generation (RAG)
-6. Menghasilkan jawaban menggunakan Large Language Model
-7. Mengurangi risiko hallucination
-8. Memberikan informasi sumber jawaban
-9. Melakukan Human Escalation untuk pertanyaan tertentu
-10. Menyediakan REST API menggunakan FastAPI
-11. Menyediakan antarmuka pengguna menggunakan Streamlit
-12. Melakukan experiment tracking dan monitoring menggunakan MLflow
-13. Menjalankan aplikasi menggunakan container Docker
-
----
-
-## 5. Business Objective
-
-Dari sisi bisnis, sistem ini bertujuan untuk membantu perusahaan:
-
-- Mengurangi pertanyaan customer support yang bersifat repetitif
-- Mempercepat waktu respons kepada pelanggan
-- Memberikan jawaban yang lebih konsisten
-- Membantu customer support mencari informasi perusahaan
-- Mengurangi risiko jawaban AI yang tidak sesuai knowledge base
-- Memberikan mekanisme Human Escalation
-- Menyediakan data yang dapat digunakan untuk analisis customer support
-
----
-
-## 6. Target Pengguna
-
-### Customer
-
-Customer dapat mengirimkan pertanyaan melalui antarmuka aplikasi dan menerima jawaban AI berdasarkan knowledge base perusahaan.
-
-### Customer Support Agent
-
-Customer Support Agent dapat menggunakan sistem sebagai AI Copilot untuk mendapatkan rekomendasi jawaban.
-
-### Customer Support Manager
-
-Manager dapat menggunakan informasi yang dihasilkan sistem untuk memantau:
-
-- kategori pertanyaan pelanggan,
-- intent pelanggan,
-- confidence model,
-- kasus Human Escalation,
-- response latency,
-- feedback,
-- dan performa model.
-
----
-
-## 7. Contoh Penggunaan
-
-Contoh pertanyaan pelanggan:
-
-```text
-"I haven't received my refund yet."
-```
-
-Sistem melakukan Intent Classification:
-
-```text
-Intent:
-track_refund
-
-Confidence:
-0.94
-```
-
-Kemudian sistem mencari informasi yang relevan:
-
-```text
-Knowledge Base:
-Refund Policy
-```
-
-LLM menghasilkan jawaban berdasarkan informasi tersebut.
-
-Contoh output:
-
-```text
-Intent:
-track_refund
-
-Confidence:
-0.94
-
-Response:
-Your refund is currently being processed. Refund processing
-may take several business days depending on the payment method.
-
-Source:
-Refund Policy
-
-Human Escalation:
-No
-```
-
----
-
-## 8. Alur Kerja Sistem
-
-Secara sederhana, sistem bekerja dengan alur berikut:
-
-```text
-Pertanyaan Customer
-        |
-        v
-   Streamlit UI
-        |
-        v
-      FastAPI
-        |
-        +-------------------------------+
-        |                               |
-        v                               v
-Intent Classification             RAG Retriever
-        |                               |
-        |                               v
-        |                            Qdrant
-        |                               |
-        |                               v
-        |                        Knowledge Base
-        |                               |
-        +---------------+---------------+
-                        |
-                        v
-                   LLM Generator
-                        |
-                        v
-                 Confidence Check
-                    /        \
-                   /          \
-                  v            v
-            Jawaban AI    Human Escalation
-```
-
-MLflow digunakan untuk melakukan experiment tracking dan monitoring terhadap komponen Machine Learning dan AI.
-
----
-
-## 9. Komponen Utama Sistem
-
-### 9.1 Intent Classification
-
-Intent Classification digunakan untuk mengenali maksud dari pertanyaan pelanggan.
+SupportPilot AI mengotomatisasi proses klasifikasi pesan tersebut menjadi
+salah satu dari **46 intent**.
 
 Contoh:
 
@@ -226,806 +35,530 @@ Input:
 "Where is my order?"
 
 Output:
-track_order
+Intent     : track_order
+Confidence : 99.82%
+Status     : accepted
 ```
 
-Contoh lainnya:
-
-```text
-Input:
-"I want to cancel my order."
-
-Output:
-cancel_order
-```
-
-Informasi intent dapat digunakan untuk:
-
-- routing pertanyaan,
-- mencari knowledge base yang relevan,
-- analytics,
-- monitoring,
-- dan Human Escalation.
+Sistem juga memiliki **confidence policy dan fallback mechanism** untuk
+mengurangi risiko penggunaan prediksi ketika model memiliki confidence
+yang rendah.
 
 ---
 
-### 9.2 Model Comparison
+# Machine Learning Pipeline
 
-Project ini akan membandingkan minimal tiga pendekatan model untuk Intent Classification.
-
-Model yang direncanakan:
-
-#### Model 1
+Pipeline pengembangan model:
 
 ```text
-TF-IDF
-   ↓
+Raw Dataset
+    ↓
+Data Understanding
+    ↓
+Data Preprocessing
+    ↓
+Train / Validation / Test Split
+    ↓
 Logistic Regression
-```
-
-#### Model 2
-
-```text
-TF-IDF
-   ↓
+    ↓
 Linear SVM
+    ↓
+DistilBERT Fine-Tuning
+    ↓
+Validation Model Comparison
+    ↓
+Final Model Selection
+    ↓
+Final Test Evaluation
+    ↓
+Error Analysis
+    ↓
+Production Inference
 ```
 
-#### Model 3
+---
+
+# Models
+
+Tiga model dikembangkan dan dibandingkan.
+
+| Model | Validation Accuracy | Validation Macro F1 |
+|---|---:|---:|
+| Logistic Regression | 98.2378% | 98.2562% |
+| Linear SVM | 98.7285% | 98.7429% |
+| DistilBERT | **99.6431%** | **99.6491%** |
+
+Model dipilih berdasarkan **Macro F1 pada Validation Set**.
+
+### Final Model
 
 ```text
-Tokenizer
-   ↓
-DistilBERT
-   ↓
-Classification Head
+Model      : DistilBERT
+Classes    : 46
+Max Length : 64 tokens
 ```
 
-Ketiga model akan dibandingkan untuk mengetahui pendekatan yang paling sesuai.
+DistilBERT menjadi model final karena memiliki performa validation terbaik.
 
 ---
 
-## 10. Evaluasi Model
+# Final Test Result
 
-Model Intent Classification akan dievaluasi menggunakan:
+Final Test Set hanya digunakan setelah proses model selection selesai.
 
-- Accuracy
-- Precision
-- Recall
-- Macro F1-score
-- Confusion Matrix
-- Inference Time
-
-Model terbaik tidak hanya ditentukan berdasarkan Accuracy.
-
-Pemilihan model juga mempertimbangkan:
-
-- Macro F1-score
-- kemampuan generalisasi,
-- performa pada setiap class,
-- inference speed,
-- ukuran model,
-- kompleksitas,
-- dan kebutuhan deployment.
-
----
-
-## 11. Retrieval-Augmented Generation (RAG)
-
-Retrieval-Augmented Generation digunakan agar Large Language Model tidak hanya mengandalkan pengetahuan bawaan model.
-
-Sebelum menghasilkan jawaban, sistem terlebih dahulu mencari informasi yang relevan dari knowledge base perusahaan.
-
-Alur RAG:
+| Metric | Score |
+|---|---:|
+| Accuracy | **99.7323%** |
+| Macro Precision | **99.7436%** |
+| Macro Recall | **99.7287%** |
+| Macro F1 | **99.7325%** |
+| Weighted F1 | **99.7326%** |
 
 ```text
-Customer Question
-        |
-        v
-Text Embedding
-        |
-        v
-Vector Search
-        |
-        v
-Qdrant Vector Database
-        |
-        v
-Relevant Knowledge
-        |
-        v
-LLM Prompt
-        |
-        v
-Generated Answer
+Test Samples       : 4,483
+Correct Prediction : 4,471
+Prediction Errors  : 12
 ```
 
-Dengan pendekatan ini, jawaban AI diharapkan lebih sesuai dengan kebijakan dan informasi perusahaan.
+Model berhasil mengklasifikasikan sekitar **99.73%** data Final Test
+dengan benar.
 
 ---
 
-## 12. Knowledge Base
+# Error Analysis
 
-Pada project ini akan dibuat perusahaan e-commerce fiktif sebagai studi kasus.
+Dari 4,483 Final Test samples hanya terdapat 12 prediction errors.
 
-Knowledge base akan berisi beberapa informasi seperti:
+Beberapa confusion pair utama:
 
 ```text
-knowledge_base/
-│
-├── shipping_policy.md
-├── refund_policy.md
-├── cancellation_policy.md
-├── payment_policy.md
-├── account_policy.md
-├── faq.md
-└── human_escalation_policy.md
+return_policy
+    → return_product_online
+
+damaged_delivery
+    → wrong_item
+
+track_order
+    → track_delivery
 ```
 
-Dokumen tersebut akan diproses menjadi potongan informasi atau chunks.
+Sebagian error terjadi pada intent yang memiliki kedekatan makna.
 
-Setiap chunk akan diubah menjadi embedding dan disimpan dalam Qdrant Vector Database.
-
----
-
-## 13. Large Language Model
-
-Large Language Model digunakan untuk menghasilkan jawaban customer support.
-
-LLM akan menerima informasi berupa:
+Confidence analysis terhadap prediction errors menunjukkan:
 
 ```text
-Customer Question
-+
-Predicted Intent
-+
-Relevant Knowledge
-+
-System Instructions
+Error confidence >= 90%      : 75.00%
+Error confidence >= 95%      : 50.00%
+Actual intent = second-best   : 91.67%
+Confidence margin < 0.10      : 8.33%
 ```
 
-Kemudian menghasilkan jawaban berdasarkan informasi tersebut.
+Hasil tersebut menunjukkan bahwa confidence score saja tidak selalu
+menjamin prediction benar.
 
 ---
 
-## 14. Grounded Response
+# Production Inference
 
-Salah satu tujuan utama project adalah mengurangi hallucination.
-
-Karena itu LLM akan diarahkan untuk:
-
-- menggunakan informasi dari knowledge base,
-- tidak membuat informasi yang tidak tersedia,
-- memberikan sumber informasi,
-- dan merekomendasikan Human Escalation jika informasi tidak cukup.
-
----
-
-## 15. Human Escalation
-
-AI tidak harus menjawab seluruh pertanyaan.
-
-Pertanyaan dapat dialihkan kepada manusia ketika:
-
-- confidence Intent Classification terlalu rendah,
-- retrieval tidak menemukan informasi relevan,
-- knowledge base tidak memiliki informasi yang dibutuhkan,
-- pertanyaan membutuhkan tindakan manual,
-- pertanyaan membutuhkan keputusan manusia,
-- atau model tidak mampu memberikan jawaban yang grounded.
-
-Contoh:
+Production inference tersedia pada:
 
 ```text
-Intent:
-unknown
-
-Confidence:
-0.38
-
-Status:
-Human Escalation Required
+src/inference/distilbert_inference.py
 ```
 
----
-
-## 16. Evaluasi RAG
-
-Sistem RAG akan dievaluasi menggunakan beberapa aspek:
-
-- Retrieval Relevance
-- Answer Relevance
-- Groundedness
-- Hallucination Rate
-- Response Latency
-
-Evaluasi dilakukan untuk memastikan bahwa dokumen yang diambil relevan dan jawaban LLM sesuai dengan knowledge base.
-
----
-
-## 17. MLOps dan LLMOps
-
-Project menggunakan MLflow untuk membantu proses experiment tracking dan monitoring.
-
-Informasi yang dapat dicatat antara lain:
-
-### Machine Learning
-
-- Model
-- Hyperparameter
-- Accuracy
-- Precision
-- Recall
-- Macro F1-score
-- Training Time
-- Model Artifact
-
-### LLM / RAG
-
-- Input
-- Output
-- Retrieval Result
-- Response Latency
-- Evaluation Result
-
----
-
-## 18. REST API
-
-Backend project akan dibuat menggunakan FastAPI.
-
-Endpoint yang direncanakan:
+Fitur utama:
 
 ```text
-GET  /health
-
-POST /predict-intent
-
-POST /ask
-
-POST /feedback
-
-GET  /metrics
+predict_intent()
+predict_top_k()
+analyze_prediction_confidence()
+predict_with_fallback()
+predict_batch()
+get_model_info()
 ```
 
-Contoh:
+---
+
+# Confidence Policy
+
+Default production policy:
 
 ```text
-POST /predict-intent
+Minimum Confidence : 70%
+Minimum Margin     : 10%
 ```
 
-Input:
+Prediction diterima apabila:
+
+```text
+confidence >= 0.70
+AND
+confidence_margin >= 0.10
+```
+
+Jika tidak memenuhi policy:
+
+```text
+final_intent = fallback
+```
+
+---
+
+# REST API
+
+SupportPilot AI menggunakan **FastAPI**.
+
+Endpoint tersedia:
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | API status |
+| GET | `/health` | Health check |
+| GET | `/model-info` | Production model information |
+| POST | `/predict` | Single intent prediction |
+| POST | `/predict/top-k` | Top-K intent prediction |
+| POST | `/predict/batch` | Batch prediction |
+
+---
+
+## Single Prediction
+
+Request:
 
 ```json
 {
-  "message": "Where is my order?"
+  "text": "Where is my order?"
 }
 ```
 
-Output:
+Contoh response:
 
 ```json
 {
-  "intent": "track_order",
-  "confidence": 0.94
+  "predicted_intent": "track_order",
+  "final_intent": "track_order",
+  "confidence_percent": 99.82,
+  "accepted": true,
+  "status": "accepted"
 }
 ```
 
 ---
 
-## 19. Streamlit Application
+## Fallback Example
 
-Streamlit digunakan sebagai antarmuka pengguna.
+Request:
 
-Fitur yang direncanakan:
-
-### Customer Support Chat
-
-Digunakan untuk berinteraksi dengan SupportPilot AI.
-
-### Model Information
-
-Menampilkan informasi model Intent Classification.
-
-### Sources
-
-Menampilkan knowledge base yang digunakan untuk menghasilkan jawaban.
-
-### Feedback
-
-User dapat memberikan feedback terhadap jawaban AI.
-
-### Monitoring Dashboard
-
-Menampilkan beberapa informasi seperti:
-
-- jumlah pertanyaan,
-- intent distribution,
-- Human Escalation,
-- confidence,
-- dan response latency.
-
----
-
-## 20. Technology Stack
-
-### Programming Language
-
-```text
-Python 3.11
+```json
+{
+  "text": "What is the weather today?"
+}
 ```
 
-### Data Processing
+Model tetap menghasilkan raw prediction karena classifier bersifat
+closed-set, tetapi confidence policy dapat mengubah hasil akhir menjadi:
 
-```text
-Pandas
-NumPy
-```
-
-### Machine Learning
-
-```text
-Scikit-learn
-PyTorch
-Hugging Face Transformers
-```
-
-### NLP dan Embedding
-
-```text
-Sentence Transformers
-```
-
-### Vector Database
-
-```text
-Qdrant
-```
-
-### Backend
-
-```text
-FastAPI
-```
-
-### Frontend
-
-```text
-Streamlit
-```
-
-### MLOps / LLMOps
-
-```text
-MLflow
-```
-
-### Infrastructure
-
-```text
-Docker
-Docker Compose
-```
-
-### Version Control
-
-```text
-Git
-GitHub
+```json
+{
+  "final_intent": "fallback",
+  "accepted": false,
+  "status": "fallback"
+}
 ```
 
 ---
 
-## 21. Struktur Project
+# Running Locally
 
-```text
-SupportPilot_AI_Bootcamp_KodingData/
-│
-├── app/
-│   ├── api/
-│   └── ui/
-│
-├── data/
-│   ├── raw/
-│   ├── processed/
-│   ├── knowledge_base/
-│   └── evaluation/
-│
-├── docs/
-│   └── project_charter.md
-│
-├── models/
-│
-├── notebooks/
-│
-├── src/
-│   ├── data/
-│   ├── models/
-│   ├── rag/
-│   └── evaluation/
-│
-├── tests/
-│
-├── .env.example
-├── .gitignore
-├── docker-compose.yml
-├── README.md
-└── requirements.txt
-```
-
----
-
-## 22. Dataset
-
-Dataset utama akan digunakan untuk membangun model Intent Classification.
-
-Dataset harus memenuhi kebutuhan:
-
-```text
-Jumlah data:
->= 2.000 records
-
-Task:
-Text Classification
-
-Input:
-Customer Question
-
-Target:
-Customer Intent
-```
-
-Informasi dataset secara lengkap akan ditambahkan setelah tahap Dataset Acquisition selesai.
-
-Dokumentasi dataset nantinya mencakup:
-
-- nama dataset,
-- sumber dataset,
-- lisensi,
-- jumlah records,
-- jumlah kategori,
-- jumlah intent,
-- struktur kolom,
-- dan alasan pemilihan dataset.
-
----
-
-## 23. Tahapan Pengerjaan
-
-### Phase 1 — Project Planning
-
-- [x] Menentukan project
-- [x] Menentukan business problem
-- [x] Menentukan objective
-- [x] Menentukan scope
-- [x] Menentukan architecture awal
-- [x] Membuat Project Charter
-- [x] Membuat README awal
-
-### Phase 2 — Dataset & Data Understanding
-
-- [ ] Dataset Acquisition
-- [ ] Load Dataset
-- [ ] Memahami struktur dataset
-- [ ] Data Quality Check
-- [ ] Exploratory Data Analysis
-- [ ] Class Distribution Analysis
-- [ ] Text Length Analysis
-- [ ] Duplicate Analysis
-- [ ] Missing Value Analysis
-
-### Phase 3 — Data Preprocessing
-
-- [ ] Data Cleaning
-- [ ] Duplicate Handling
-- [ ] Train / Validation / Test Split
-- [ ] TF-IDF Preparation
-- [ ] Transformer Tokenization
-
-### Phase 4 — Machine Learning
-
-- [ ] Logistic Regression
-- [ ] Linear SVM
-- [ ] DistilBERT
-- [ ] Model Evaluation
-- [ ] Model Comparison
-- [ ] Error Analysis
-- [ ] Best Model Selection
-
-### Phase 5 — MLOps
-
-- [ ] MLflow Setup
-- [ ] Experiment Tracking
-- [ ] Metrics Logging
-- [ ] Model Artifact Logging
-- [ ] Model Versioning
-
-### Phase 6 — Knowledge Base
-
-- [ ] Membuat perusahaan studi kasus
-- [ ] Shipping Policy
-- [ ] Refund Policy
-- [ ] Cancellation Policy
-- [ ] Payment Policy
-- [ ] Account Policy
-- [ ] FAQ
-- [ ] Human Escalation Policy
-
-### Phase 7 — RAG
-
-- [ ] Document Loading
-- [ ] Document Cleaning
-- [ ] Chunking
-- [ ] Embedding
-- [ ] Qdrant Setup
-- [ ] Vector Storage
-- [ ] Retrieval
-- [ ] Retrieval Evaluation
-
-### Phase 8 — LLM
-
-- [ ] LLM Integration
-- [ ] Prompt Engineering
-- [ ] RAG + LLM Integration
-- [ ] Grounded Response
-- [ ] Source Citation
-- [ ] Confidence Checking
-- [ ] Human Escalation
-
-### Phase 9 — Backend
-
-- [ ] FastAPI Setup
-- [ ] Health Endpoint
-- [ ] Intent Prediction Endpoint
-- [ ] RAG Endpoint
-- [ ] Feedback Endpoint
-- [ ] API Error Handling
-
-### Phase 10 — Frontend
-
-- [ ] Streamlit Setup
-- [ ] Customer Chat Interface
-- [ ] Intent Information
-- [ ] Source Information
-- [ ] Feedback System
-- [ ] Monitoring Dashboard
-
-### Phase 11 — Testing
-
-- [ ] Unit Test
-- [ ] API Test
-- [ ] Model Test
-- [ ] Retrieval Test
-- [ ] Error Handling Test
-- [ ] End-to-End Test
-
-### Phase 12 — Docker & Deployment
-
-- [ ] Dockerfile FastAPI
-- [ ] Dockerfile Streamlit
-- [ ] Qdrant Service
-- [ ] MLflow Service
-- [ ] Docker Compose
-- [ ] End-to-End Container Test
-- [ ] Deployment
-
-### Phase 13 — Finalisasi
-
-- [ ] README Final
-- [ ] Architecture Diagram
-- [ ] Screenshot MLflow
-- [ ] Screenshot Application
-- [ ] PowerPoint
-- [ ] Demo Video
-- [ ] Final Quality Check
-
----
-
-## 24. Deliverables
-
-Final project akan menghasilkan:
-
-```text
-Notebook Data Understanding dan EDA
-
-Notebook Preprocessing
-
-Notebook Model Comparison
-
-Trained Intent Classification Model
-
-MLflow Experiment Tracking
-
-Knowledge Base
-
-RAG Pipeline
-
-LLM Integration
-
-FastAPI Backend
-
-Streamlit Application
-
-Qdrant Vector Database
-
-Human Escalation Mechanism
-
-Docker Configuration
-
-README
-
-Architecture Documentation
-
-PowerPoint Presentation
-
-Demo Video
-```
-
----
-
-## 25. Success Criteria
-
-Project dianggap berhasil jika:
-
-- Dataset memiliki minimal 2.000 records
-- Dataset berhasil dianalisis dan diproses
-- Minimal tiga model berhasil dibandingkan
-- Metrik evaluasi model terdokumentasi
-- Model terbaik dapat melakukan Intent Classification
-- MLflow dapat mencatat experiment
-- Knowledge Base berhasil dibuat
-- Qdrant dapat melakukan vector search
-- RAG dapat menemukan informasi relevan
-- LLM dapat menghasilkan jawaban berdasarkan knowledge base
-- Sistem dapat melakukan Human Escalation
-- FastAPI dapat digunakan
-- Streamlit dapat digunakan
-- Sistem dapat berjalan secara end-to-end
-- Project dapat direproduksi menggunakan dokumentasi README
-
----
-
-## 26. Project Scope
-
-### Termasuk dalam Project
-
-```text
-Intent Classification
-Machine Learning
-Transformer
-RAG
-LLM
-Knowledge Base
-Vector Database
-MLOps / LLMOps
-FastAPI
-Streamlit
-Human Escalation
-Docker
-Evaluation
-Monitoring
-```
-
-### Tidak Termasuk pada Versi Pertama
-
-```text
-WhatsApp Integration
-Real CRM Integration
-Real Customer Database
-Payment Gateway
-Voice AI
-Production Authentication
-Multi-Tenant SaaS
-Real-Time Human Agent Platform
-```
-
-Fitur tersebut dapat dikembangkan setelah versi utama selesai.
-
----
-
-## 27. Portfolio Development
-
-Setelah Final Project KodingData selesai dan dipresentasikan, project akan dikembangkan menjadi portfolio internasional.
-
-Tahapan lanjutan meliputi:
-
-```text
-README Bahasa Inggris
-
-Professional GitHub Documentation
-
-Live Demo
-
-English Demo Video
-
-Architecture Case Study
-
-API Documentation
-
-Upwork Portfolio Description
-
-Freelancer Portfolio Description
-```
-
----
-
-## 28. Instalasi
-
-> Bagian ini masih akan diperbarui seiring perkembangan project.
-
-Clone repository:
-
-```bash
-git clone <repository-url>
-```
-
-Masuk ke directory project:
-
-```bash
-cd SupportPilot_AI_Bootcamp_KodingData
-```
-
-Buat Conda environment:
-
-```bash
-conda create -n supportpilot-ai python=3.11 -y
-```
-
-Aktifkan environment:
+## 1. Activate Environment
 
 ```bash
 conda activate supportpilot-ai
 ```
 
-Install dependency:
+## 2. Run FastAPI
 
 ```bash
-pip install -r requirements.txt
+python -m uvicorn src.api.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
----
-
-## 29. Menjalankan Project
-
-> Project masih dalam tahap pengembangan.
-
-Cara menjalankan FastAPI, Streamlit, MLflow, Qdrant, dan Docker akan ditambahkan setelah masing-masing komponen selesai dikembangkan.
-
----
-
-## 30. Status Saat Ini
+Swagger UI:
 
 ```text
-Current Phase:
-Project Planning
-
-Next Phase:
-Dataset Acquisition & Data Understanding
+http://127.0.0.1:8000/docs
 ```
 
----
-
-## 31. Author
-
-**Abdul Muin**
-
-Data Science Student  
-Machine Learning & AI Engineering
-
----
-
-## 32. Catatan
-
-Project ini dibuat untuk:
+Health Check:
 
 ```text
-Final Project KodingData Bootcamp
-+
-AI Engineering Portfolio
-+
-Pembelajaran end-to-end AI Engineering
+http://127.0.0.1:8000/health
 ```
 
-Dokumentasi saat ini menggunakan **Bahasa Indonesia** agar proses pembelajaran dan presentasi Final Project lebih mudah dipahami.
+---
 
-Setelah Final Project selesai, dokumentasi portfolio akan dikembangkan menggunakan Bahasa Inggris.
+# Docker Deployment
+
+Production baseline menggunakan **CPU Docker container** agar deployment
+lebih portable dan tidak bergantung pada NVIDIA GPU runtime.
+
+## Build and Run
+
+```bash
+docker compose up -d --build
+```
+
+API tersedia pada:
+
+```text
+http://127.0.0.1:8001
+```
+
+Swagger:
+
+```text
+http://127.0.0.1:8001/docs
+```
+
+Health:
+
+```text
+http://127.0.0.1:8001/health
+```
+
+Cek container:
+
+```bash
+docker compose ps
+```
+
+Lihat log:
+
+```bash
+docker compose logs api
+```
+
+Stop application:
+
+```bash
+docker compose down
+```
+
+---
+
+# Docker Security
+
+Container production menjalankan API menggunakan non-root user:
+
+```text
+user  : appuser
+group : appgroup
+```
+
+Security configuration juga mencakup:
+
+```text
+no-new-privileges
+cap_drop: ALL
+init process
+health check
+graceful shutdown
+```
+
+---
+
+# Automated Testing
+
+Project memiliki dua jenis automated testing.
+
+### API / Inference Tests
+
+```text
+tests/test_api.py
+```
+
+Menguji:
+
+- root endpoint
+- health endpoint
+- model information
+- single prediction
+- fallback
+- Top-K prediction
+- batch prediction
+- request validation
+- invalid input handling
+
+Total:
+
+```text
+15 tests
+```
+
+### Docker Integration Tests
+
+```text
+tests/test_docker_api.py
+```
+
+Menguji API yang benar-benar berjalan dari Docker container:
+
+- Docker health
+- model information
+- single prediction
+- fallback
+- Top-K
+- batch inference
+
+Total:
+
+```text
+6 tests
+```
+
+Menjalankan semua test:
+
+```bash
+python -m pytest tests -v
+```
+
+Current result:
+
+```text
+21 passed
+0 failed
+```
+
+---
+
+# Project Structure
+
+```text
+SupportPilot_AI_Bootcamp_KodingData/
+│
+├── data/
+│
+├── models/
+│   └── distilbert_supportpilot/
+│       └── best_model/
+│
+├── notebooks/
+│   ├── 01_data_understanding.ipynb
+│   ├── 02_data_preprocessing.ipynb
+│   ├── 03_logistic_regression_baseline.ipynb
+│   ├── 04_linear_svm.ipynb
+│   └── 05_distilbert.ipynb
+│
+├── reports/
+│   └── metrics/
+│
+├── src/
+│   ├── api/
+│   │   └── main.py
+│   │
+│   ├── data/
+│   │
+│   └── inference/
+│       └── distilbert_inference.py
+│
+├── tests/
+│   ├── test_api.py
+│   └── test_docker_api.py
+│
+├── .dockerignore
+├── .gitignore
+├── dockerfile
+├── docker-compose.yml
+├── requirements-api.txt
+├── requirements-dev.txt
+├── requirements-ml.txt
+└── README.md
+```
+
+---
+
+# Technology Stack
+
+### Machine Learning
+
+```text
+Python
+PyTorch
+Hugging Face Transformers
+Scikit-learn
+Pandas
+NumPy
+```
+
+### API
+
+```text
+FastAPI
+Pydantic
+Uvicorn
+```
+
+### Testing
+
+```text
+Pytest
+FastAPI TestClient
+Docker Integration Testing
+```
+
+### Deployment
+
+```text
+Docker
+Docker Compose
+PyTorch CPU
+```
+
+---
+
+# Development Environment
+
+Project dikembangkan menggunakan:
+
+```text
+Python       : 3.11.15
+PyTorch      : 2.12.0+cu126
+Transformers : 5.15.0
+FastAPI      : 0.141.1
+Pydantic     : 2.13.4
+```
+
+Local training menggunakan:
+
+```text
+NVIDIA GeForce RTX 3060 Laptop GPU
+```
+
+Production Docker baseline menggunakan:
+
+```text
+CPU
+```
+
+---
+
+# Current Status
+
+```text
+Data Pipeline             ✅
+Baseline Models           ✅
+DistilBERT Fine-Tuning    ✅
+Model Selection           ✅
+Final Test Evaluation     ✅
+Error Analysis            ✅
+Production Inference      ✅
+FastAPI                   ✅
+Confidence Fallback       ✅
+Batch Prediction          ✅
+Automated Testing         ✅
+Docker                    ✅
+Docker Compose            ✅
+Security Hardening        ✅
+```
+
+SupportPilot AI siap digunakan sebagai **production-style intent
+classification API baseline**.
