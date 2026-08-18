@@ -204,6 +204,108 @@ final_intent = fallback
 
 ---
 
+# Streamlit User Interface
+
+SupportPilot AI menyediakan web interface berbasis **Streamlit**
+untuk berinteraksi dengan production model melalui FastAPI.
+
+UI berjalan sebagai service terpisah dan berkomunikasi dengan
+FastAPI melalui internal Docker network.
+
+## Features
+
+### Intent Analyzer
+
+Melakukan klasifikasi terhadap satu customer message.
+
+Fitur yang ditampilkan:
+
+- Final intent
+- Raw model prediction
+- Confidence score
+- Confidence margin
+- Second-best intent
+- Confidence policy decision
+- Automatic fallback / human review
+
+![SupportPilot AI Intent Analyzer](docs/images/intent_analyzer.png)
+
+---
+
+### Top-K Intent Analysis
+
+Menampilkan beberapa intent dengan probability tertinggi dari model.
+
+Fitur:
+
+- Top intent
+- Top confidence
+- Top-K candidate ranking
+- Confidence visualization
+- Candidate detail table
+
+![SupportPilot AI Top-K Analysis](docs/images/top_k_analysis.png)
+
+---
+
+### Batch Analysis
+
+Mendukung klasifikasi banyak customer message sekaligus.
+
+Input dapat diberikan melalui:
+
+- Multi-line text
+- CSV upload
+
+Output mencakup:
+
+- Total messages
+- Accepted predictions
+- Fallback predictions
+- Acceptance rate
+- Classification result table
+- Intent distribution
+- Downloadable CSV result
+
+![SupportPilot AI Batch Analysis](docs/images/batch_analysis.png)
+
+---
+
+# System Architecture
+
+```text
+                           SupportPilot AI
+                                  │
+                                  ▼
+                        ┌───────────────────┐
+                        │   Streamlit UI    │
+                        │      :8501        │
+                        └─────────┬─────────┘
+                                  │
+                                  │ Internal Docker Network
+                                  ▼
+                        ┌───────────────────┐
+                        │     FastAPI       │
+                        │      :8000        │
+                        └─────────┬─────────┘
+                                  │
+                                  ▼
+                        ┌───────────────────┐
+                        │    DistilBERT     │
+                        │    46 Intents     │
+                        └─────────┬─────────┘
+                                  │
+                         Confidence Policy
+                         ≥70% confidence
+                         ≥10% margin
+                                  │
+                         ┌────────┴────────┐
+                         ▼                 ▼
+                     Accepted          Fallback
+                                      Human Review
+
+```
+---
 # REST API
 
 SupportPilot AI menggunakan **FastAPI**.
@@ -294,12 +396,34 @@ Health Check:
 http://127.0.0.1:8000/health
 ```
 
+## 3. Run Streamlit UI
+
+Jalankan di terminal terpisah:
+
+```bash
+streamlit run src/ui/streamlit_app.py --server.port 8501
+```
+
+Jika perlu, set API URL untuk UI:
+
+```bash
+set SUPPORTPILOT_API_URL=http://127.0.0.1:8000
+```
+
+Streamlit UI:
+
+```text
+http://127.0.0.1:8501
+```
+
 ---
 
 # Docker Deployment
 
-Production baseline menggunakan **CPU Docker container** agar deployment
-lebih portable dan tidak bergantung pada NVIDIA GPU runtime.
+Production deployment menggunakan **Docker Compose** dengan dua service:
+
+- **api** → FastAPI + DistilBERT inference
+- **ui** → Streamlit user interface
 
 ## Build and Run
 
@@ -307,23 +431,33 @@ lebih portable dan tidak bergantung pada NVIDIA GPU runtime.
 docker compose up -d --build
 ```
 
-API tersedia pada:
+## Service Access
+
+Streamlit UI:
+
+```text
+http://127.0.0.1:8501
+```
+
+FastAPI:
 
 ```text
 http://127.0.0.1:8001
 ```
 
-Swagger:
+Swagger UI:
 
 ```text
 http://127.0.0.1:8001/docs
 ```
 
-Health:
+Health Check:
 
 ```text
 http://127.0.0.1:8001/health
 ```
+
+## Useful Commands
 
 Cek container:
 
@@ -331,10 +465,16 @@ Cek container:
 docker compose ps
 ```
 
-Lihat log:
+Lihat log API:
 
 ```bash
 docker compose logs api
+```
+
+Lihat log UI:
+
+```bash
+docker compose logs ui
 ```
 
 Stop application:
@@ -347,30 +487,38 @@ docker compose down
 
 # Docker Security
 
-Container production menjalankan API menggunakan non-root user:
+Container production menjalankan aplikasi menggunakan **non-root user**:
 
 ```text
 user  : appuser
 group : appgroup
 ```
 
-Security configuration juga mencakup:
+Security hardening yang digunakan:
 
 ```text
+non-root execution
 no-new-privileges
 cap_drop: ALL
 init process
 health check
 graceful shutdown
+isolated service communication
+```
+
+Internal communication antara UI dan API di Docker Compose menggunakan:
+
+```text
+http://api:8000
 ```
 
 ---
 
 # Automated Testing
 
-Project memiliki dua jenis automated testing.
+Project memiliki tiga kelompok automated testing.
 
-### API / Inference Tests
+## 1. API / Inference Tests
 
 ```text
 tests/test_api.py
@@ -394,13 +542,13 @@ Total:
 15 tests
 ```
 
-### Docker Integration Tests
+## 2. Docker API Integration Tests
 
 ```text
 tests/test_docker_api.py
 ```
 
-Menguji API yang benar-benar berjalan dari Docker container:
+Menguji API yang benar-benar berjalan di Docker container:
 
 - Docker health
 - model information
@@ -415,7 +563,26 @@ Total:
 6 tests
 ```
 
-Menjalankan semua test:
+## 3. Docker UI Integration Tests
+
+```text
+tests/test_docker_ui.py
+```
+
+Menguji UI container:
+
+- UI health
+- UI root page
+- non-root execution
+- internal API URL configuration
+
+Total:
+
+```text
+4 tests
+```
+
+## Run All Tests
 
 ```bash
 python -m pytest tests -v
@@ -424,7 +591,7 @@ python -m pytest tests -v
 Current result:
 
 ```text
-21 passed
+25 passed
 0 failed
 ```
 
@@ -436,6 +603,12 @@ Current result:
 SupportPilot_AI_Bootcamp_KodingData/
 │
 ├── data/
+│
+├── docs/
+│   └── images/
+│       ├── intent_analyzer.png
+│       ├── top_k_analysis.png
+│       └── batch_analysis.png
 │
 ├── models/
 │   └── distilbert_supportpilot/
@@ -453,24 +626,31 @@ SupportPilot_AI_Bootcamp_KodingData/
 │
 ├── src/
 │   ├── api/
+│   │   ├── __init__.py
 │   │   └── main.py
 │   │
-│   ├── data/
+│   ├── inference/
+│   │   └── distilbert_inference.py
 │   │
-│   └── inference/
-│       └── distilbert_inference.py
+│   └── ui/
+│       └── streamlit_app.py
 │
 ├── tests/
 │   ├── test_api.py
-│   └── test_docker_api.py
+│   ├── test_docker_api.py
+│   └── test_docker_ui.py
 │
 ├── .dockerignore
+├── .env.example
+├── .gitattributes
 ├── .gitignore
-├── dockerfile
 ├── docker-compose.yml
+├── dockerfile
+├── dockerfile.ui
 ├── requirements-api.txt
 ├── requirements-dev.txt
 ├── requirements-ml.txt
+├── requirements-ui.txt
 └── README.md
 ```
 
@@ -478,7 +658,7 @@ SupportPilot_AI_Bootcamp_KodingData/
 
 # Technology Stack
 
-### Machine Learning
+## Machine Learning
 
 ```text
 Python
@@ -489,7 +669,7 @@ Pandas
 NumPy
 ```
 
-### API
+## API
 
 ```text
 FastAPI
@@ -497,7 +677,15 @@ Pydantic
 Uvicorn
 ```
 
-### Testing
+## UI
+
+```text
+Streamlit
+Plotly
+Requests
+```
+
+## Testing
 
 ```text
 Pytest
@@ -505,7 +693,7 @@ FastAPI TestClient
 Docker Integration Testing
 ```
 
-### Deployment
+## Deployment
 
 ```text
 Docker
@@ -552,13 +740,22 @@ Final Test Evaluation     ✅
 Error Analysis            ✅
 Production Inference      ✅
 FastAPI                   ✅
+Streamlit UI              ✅
 Confidence Fallback       ✅
+Top-K Analysis            ✅
 Batch Prediction          ✅
+CSV Upload                ✅
 Automated Testing         ✅
 Docker                    ✅
 Docker Compose            ✅
 Security Hardening        ✅
 ```
 
-SupportPilot AI siap digunakan sebagai **production-style intent
-classification API baseline**.
+SupportPilot AI siap digunakan sebagai **production-style customer support
+intent classification system** dengan:
+
+- FastAPI inference service
+- Streamlit user interface
+- Docker Compose deployment
+- confidence-based fallback mechanism
+- automated API dan UI testing
