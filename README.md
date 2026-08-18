@@ -728,7 +728,24 @@ CPU
 ```
 
 ---
+# MLOps
 
+SupportPilot AI menerapkan baseline MLOps melalui:
+
+- model comparison dan evaluation
+- Git + Git LFS model versioning
+- automated testing
+- Docker containerization
+- Docker Compose deployment
+- API/UI health monitoring
+- confidence-based prediction safety
+- reproducible fresh-clone deployment
+
+Dokumentasi lengkap:
+
+[`docs/MLOPS.md`](docs/MLOPS.md)
+
+---
 # Current Status
 
 ```text
